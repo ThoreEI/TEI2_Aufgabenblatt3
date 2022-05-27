@@ -1,5 +1,4 @@
 #include "TemplateArray.h"
-#include "RingBuffer.h"
 #include <iostream>
 #include <string>
 using std::cin;
@@ -25,37 +24,40 @@ typedef struct  WavHead {
     long subChunkTwoSize;
 } header;
 
-int getFileSize(FILE *wavFile) {
-    int fileSize;
-    fseek(wavFile,0,SEEK_END);
-    fileSize = ftell(wavFile);
-    fseek(wavFile,0,SEEK_SET);
-    return fileSize;
-}
+void readAndPrintWavFileData(header head, FILE *wavFile);
+int getFileSize(FILE *wavFile);
 
 int main() {
-
     /* Aufgabe 1
      * Klasse Container erstellen (siehe TemplateArray.h)
      */
 
-     /* Aufgabe 2
-      * WAV-File einlesen mit Template-Array
-      */
+    /* Aufgabe 2
+     * WAV-File einlesen mit Template-Array
+     */
     header head;
     FILE *wavFile;
     const char *filePath;
     filePath = "C://Users//UnknownUser//CLionProjects//Aufgabenblatt3//Aufgabenblatt3_Aufgabe1//Sound.wav";
     wavFile = fopen(filePath, "r"); // "r" for reading
+    readAndPrintWavFileData(head, wavFile);
 
+    /* Aufgabe 3
+     * RingBuffer implementieren (siehe RingBuffer.h)
+     * und zu Sound Samples der WAV-Datei 8000 addieren -->  Verzögerung
+     */
+
+    return 0;
+}
+
+void readAndPrintWavFileData(header head, FILE *wavFile) {
     if (!wavFile) {
         cout << " File not found.";
-        return 1; // exits program if file isn't readable
+        return;
     }
-
     // printing the size (in bytes) of the wav file
     int fileSize = getFileSize(wavFile);
-    cout << "\n Size of the wav file: " << fileSize << " bytes" << endl;
+    cout << " Size of the wav file: " << fileSize << " bytes" << endl;
 
     // computing the read header bytes for later calculations/prints
     size_t bytesReadFromHeader = fread(&head, 1, sizeof(struct WavHead), wavFile);
@@ -88,7 +90,8 @@ int main() {
     cout << " File size        : " << templateArray[4] << " bytes" << endl;
     cout << " Format           : " << (char) templateArray[5] << (char) templateArray[6] << (char) templateArray[7]
          << (char) templateArray[8] << endl; // file type header
-    cout << " Subchunk1 ID     : " << (char) templateArray[9] << (char) templateArray[10] << (char) templateArray[11]<< (char) templateArray[12] << endl; //format chunk marker
+    cout << " Subchunk1 ID     : " << (char) templateArray[9] << (char) templateArray[10] << (char) templateArray[11]
+         << (char) templateArray[12] << endl; //format chunk marker
     cout << " Subchunk1 size   : " << templateArray[13] << endl; //length of format data listed above
     cout << " Audio format     : " << templateArray[14] << endl; // type of audio format (example: 1 --> PCM)
     cout << " Channels         : " << templateArray[15] << endl; // number of channels
@@ -104,14 +107,13 @@ int main() {
     cout << " Subchunk2 size   : " << templateArray[24] << " bytes"
          << endl; //number of bytes in the audio data == samples * channels * bits per sample / 8
     cout << " ---------------------------------" << endl;
-
-    /* Aufgabe 3
-     * RingBuffer implementieren und zu Sound Samples der WAV-Datei 8000 addieren -->  Verzögerung
-     */
-
-    // read the audio data of the .wav
-    int bytesLeft = (int) (fileSize - bytesReadFromHeader);
-
     fclose(wavFile);
-    return 0;
+}
+
+int getFileSize(FILE *wavFile) {
+    int fileSize;
+    fseek(wavFile,0,SEEK_END);
+    fileSize = ftell(wavFile);
+    fseek(wavFile,0,SEEK_SET);
+    return fileSize;
 }
