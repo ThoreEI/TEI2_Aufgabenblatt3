@@ -51,12 +51,13 @@ int main() {
      */
     container <int> wavHead = readHeader(head, wavFile);
     printHeader(wavHead);
+
+
     container <char> wavData = readData(filePath);
+    cout << " Head: " << wavHead.getSize() << "Data: " << wavData.getSize() << endl;
     writeNewWavFile(wavHead, wavData);
     wavData.toString();
 }
-
-
 
 container <int> readHeader(header head, FILE *wavFile) {
     if (!wavFile) {
@@ -123,28 +124,17 @@ void printHeader (container <int> templateArray) {
     cout << " ---------------------------------" << endl;
 }
 
-int getFileSize(FILE *wavFile) {
-    int fileSize;
-    fseek(wavFile, 0, SEEK_END);
-    fileSize = ftell(wavFile);
-    fseek(wavFile, 0, SEEK_SET);
-    return fileSize;
-}
-
 container <char> readData (const char *filePath) {
     container <char> templateArray(100);
     fstream wavFile = nullptr;
     wavFile.open(filePath, ios::in);
     if (wavFile.is_open()) {
         char charOfWavFileData;
-        int headerBytesLeft = sizeof(header);
         int index = 0;
-        while (wavFile.get(charOfWavFileData)) {
-            if (headerBytesLeft <= 0) {
+        while (wavFile.get(charOfWavFileData)) { //skipping first 44 reads (header data)
+            if (index > sizeof(header))
                 templateArray[index] = charOfWavFileData;
-                index++;
-            }
-            headerBytesLeft--;
+        index++;
         }
         wavFile.close();
     }
@@ -155,9 +145,17 @@ void writeNewWavFile(container<int> head, container<char> data) {
     FILE *outputFile = nullptr;
     outputFile = fopen("C://Users//UnknownUser//CLionProjects//Aufgabenblatt3//Aufgabenblatt3_Aufgabe1//new.wav", "wb"); //write binaries
     for (int i = 0; i < head.getSize(); i++)
-        fwrite((char*) &head[i], sizeof(char), 1, outputFile);
+        fwrite((char*) &head[i], sizeof(int), 1, outputFile);
     for (int i = 0; i < data.getSize(); i++)
         fwrite((char*) &data[i], sizeof(char), 1, outputFile);
+}
+
+int getFileSize(FILE *wavFile) {
+    int fileSize;
+    fseek(wavFile, 0, SEEK_END);
+    fileSize = ftell(wavFile);
+    fseek(wavFile, 0, SEEK_SET);
+    return fileSize;
 }
 
 
