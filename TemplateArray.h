@@ -18,9 +18,10 @@ public:
         this->size = size;
         templateArray = new T[size];
     }
-    ~container() { // free up memory
-        delete[] templateArray;
-    }
+//    ~container() { // free up memory
+//        delete[] templateArray; // doesn't work, why?
+//    }
+
     //Override
     T& operator[] (int index) {
         if (index >= size)
@@ -32,7 +33,6 @@ public:
         T *newTemplateArray = new T[index];
         for (int i = 0; i < size; ++i) //transfer all entries
             newTemplateArray[i] = templateArray[i];
-        //~container();
         delete[] templateArray; //free up memory
         this->size = index + 1;
         templateArray = newTemplateArray; //set the new reference
@@ -40,6 +40,11 @@ public:
 
     int getSize() {
         return this->size;
+    }
+
+    void toString() {
+        for (int i = 0; i < this->getSize(); i++)
+            cout << this->templateArray[i] << " ";
     }
 };
 

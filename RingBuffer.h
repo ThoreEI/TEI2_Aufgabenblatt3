@@ -1,14 +1,16 @@
 #ifndef AUFGABENBLATT3_AUFGABE1_RINGBUFFER_H
 #define AUFGABENBLATT3_AUFGABE1_RINGBUFFER_H
-using namespace std;
 
+#include <fstream>
+
+using namespace std;
 
 template <typename T> class RingBuffer {
 
 private:
     int size;
     int index;
-    T *elements;
+    T *ringBuffer;
 
 public:
     RingBuffer() = default;
@@ -16,27 +18,27 @@ public:
     explicit RingBuffer(int size) {
         this->size = size;
         this->index = 0; // starts at first entry
-        elements = new T[size];
+        ringBuffer = new T[size];
     }
 
     ~RingBuffer() {
-        delete[] elements;
+        delete[] ringBuffer;
     }
 
-    void addElement(T element) {
-        this->elements[this->index] = element;
+    T& operator[] (int position) { //for setting and getting entries
         this->index += 1; // increase for next element
         if (this->index == this-> size)
             this->index = 0; //no place left -> overwriting first index next time
+        return ringBuffer[position];
     }
-
-    T &getElement(int index) {
-        if (0 <= index && index < this->size)
-            return elements[index];
-        }
 
     int getSize() {
         return this->size;
+    }
+
+    void toString() {
+        for (int i = 0; i < this->getSize(); i++)
+            cout << this->ringBuffer[i] << " ";
     }
 };
 
