@@ -1,3 +1,4 @@
+
 #include "TemplateArray.h"
 #include "RingBuffer.h"
 #include <iostream>
@@ -25,10 +26,10 @@ typedef struct  WavHead {
     long subChunkTwoSize;
 } header;
 
-container<int> readHeader(header head, FILE *filePath);
+container<int> readHeader(header head, FILE *wavFile);
 void printHeader(container<int> templateArray);
 container<char> readData(const char *filePath);
-void writeNewWavFile(container<int> container1, container<char> container2);
+void writeNewWavFile(container<int> head, container<char> data);
 int getFileSize(FILE *wavFile);
 
 int main() {
@@ -44,19 +45,19 @@ int main() {
     const char *filePath;
     filePath = "C://Users//UnknownUser//CLionProjects//Aufgabenblatt3//Aufgabenblatt3_Aufgabe1//test.wav";
     wavFile = fopen(filePath, "r"); // "r" for reading
+    container <int> wavHead = readHeader(head, wavFile);
+    printHeader(wavHead);
 
     /* Aufgabe 3
      * RingBuffer implementieren (siehe RingBuffer.h)
      * und zu Sound Samples der WAV-Datei 8000 addieren -->  Verzögerung
      */
-    container <int> wavHead = readHeader(head, wavFile);
-    printHeader(wavHead);
 
-
+    // readData with templateArray
     container <char> wavData = readData(filePath);
-    cout << " Head: " << wavHead.getSize() << "Data: " << wavData.getSize() << endl;
+    // write the newWavFile with information of wavHead, wavData
     writeNewWavFile(wavHead, wavData);
-    wavData.toString();
+   // wavData.toString();
 }
 
 container <int> readHeader(header head, FILE *wavFile) {
@@ -126,15 +127,16 @@ void printHeader (container <int> templateArray) {
 
 container <char> readData (const char *filePath) {
     container <char> templateArray(100);
-    fstream wavFile = nullptr;
+    fstream wavFile;
     wavFile.open(filePath, ios::in);
     if (wavFile.is_open()) {
         char charOfWavFileData;
         int index = 0;
+        int readsLeftHeader = sizeof(header);
         while (wavFile.get(charOfWavFileData)) { //skipping first 44 reads (header data)
-            if (index > sizeof(header))
-                templateArray[index] = charOfWavFileData;
-        index++;
+            if (readsLeftHeader <= 0)
+                templateArray[index++] = charOfWavFileData;
+            readsLeftHeader--;
         }
         wavFile.close();
     }

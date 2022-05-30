@@ -18,6 +18,7 @@ public:
         this->size = size;
         templateArray = new T[size];
     }
+
 //    ~container() { // free up memory
 //        delete[] templateArray; // doesn't work, why?
 //    }
@@ -33,7 +34,7 @@ public:
         T *newTemplateArray = new T[index];
         for (int i = 0; i < size; ++i) //transfer all entries
             newTemplateArray[i] = templateArray[i];
-        delete[] templateArray; //free up memory
+        delete[] templateArray; //free up memory //doesn't work, why?
         this->size = index + 1;
         templateArray = newTemplateArray; //set the new reference
     }

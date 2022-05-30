@@ -8,15 +8,13 @@ using namespace std;
 template <typename T> class RingBuffer {
 
 private:
-    int size;
+    const int size = 8000;
     int index;
     T *ringBuffer;
 
 public:
-    RingBuffer() = default;
 
-    explicit RingBuffer(int size) {
-        this->size = size;
+    RingBuffer() {
         this->index = 0; // starts at first entry
         ringBuffer = new T[size];
     }
@@ -38,7 +36,7 @@ public:
 
     void toString() {
         for (int i = 0; i < this->getSize(); i++)
-            cout << this->ringBuffer[i] << " ";
+            cout << (char) this->ringBuffer[i] << " ";
     }
 };
 
